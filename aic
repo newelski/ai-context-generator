@@ -1,0 +1,464 @@
+#!/usr/bin/env python3
+"""
+Enhanced AI Context Generator - Creates smart, context-efficient project summaries
+Focuses on signal over noise and respects token limits
+"""
+
+import os
+import sys
+import platform
+import subprocess
+import json
+import argparse
+from pathlib import Path
+from datetime import datetime
+import mimetypes
+import hashlib
+import re
+
+class EnhancedAIContextGenerator:
+    def __init__(self, max_tokens=15000):  # Conservative limit
+        self.max_tokens = max_tokens
+        self.current_tokens = 0
+        
+        # Critical files that should always be included (full content)
+        self.critical_files = {
+            'package.json', 'composer.json', 'requirements.txt', 'Pipfile',
+            'pyproject.toml', 'Cargo.toml', 'tsconfig.json', 'vite.config.js',
+            'webpack.config.js', '.env.example', 'docker-compose.yml',
+            'README.md', 'README.txt'
+        }
+        
+        # Files to include with smart summarization
+        self.important_extensions = {
+            '.py', '.js', '.ts', '.jsx', '.tsx', '.vue', '.svelte',
+            '.php', '.html', '.css', '.scss', '.java', '.c', '.cpp',
+            '.go', '.rs', '.rb', '.swift', '.kt'
+        }
+        
+        # Files/patterns to completely ignore
+        self.ignore_patterns = {
+            # Minified/bundled files
+            r'\.min\.(js|css)$',
+            r'bundle\.(js|css)$',
+            r'chunk\.[a-f0-9]+\.(js|css)$',
+            r'vendor\.(js|css)$',
+            # Generated/compiled files
+            r'\.(map|d\.ts)$',
+            # Large data files
+            r'\.(json|xml|csv|sql)$',  # Only if > 10KB
+            # Test/mock files (summarize only)
+            r'\.test\.(js|ts|py)$',
+            r'\.spec\.(js|ts)$',
+            r'_test\.py$',
+            r'test_.*\.py$',
+        }
+        
+        # Directories to skip entirely
+        self.skip_dirs = {
+            'node_modules', '.git', '__pycache__', 'vendor', 'build', 
+            'dist', 'target', 'out', '.idea', '.vs', 'venv', '.venv',
+            'coverage', '.nyc_output', '.pytest_cache'
+        }
+        
+        self.max_file_size = 50 * 1024  # 50KB limit for full content
+
+    def estimate_tokens(self, text):
+        """Rough token estimation (4 chars ≈ 1 token)"""
+        return len(text) // 4
+
+    def should_ignore_file(self, file_path):
+        """Check if file should be completely ignored"""
+        filename = os.path.basename(file_path)
+        
+        for pattern in self.ignore_patterns:
+            if re.search(pattern, filename):
+                # Exception for small files
+                try:
+                    if os.path.getsize(file_path) < 10240:  # 10KB
+                        return False
+                except:
+                    pass
+                return True
+        return False
+
+    def summarize_code_file(self, file_path):
+        """Extract key information from code files"""
+        try:
+            content = self.read_file_content(file_path)
+            if not content:
+                return None
+                
+            lines = content.split('\n')
+            summary = []
+            
+            # Extract imports/requires/includes
+            imports = []
+            for line in lines[:50]:  # Check first 50 lines
+                line = line.strip()
+                if (line.startswith(('import ', 'from ', 'require(', '#include', 'using ')) 
+                    and not line.startswith('//')):
+                    imports.append(line)
+            
+            if imports:
+                summary.append("// Key imports/dependencies:")
+                summary.extend(imports[:10])  # Limit to 10 imports
+                summary.append("")
+            
+            # Extract functions/classes/exports
+            definitions = []
+            for line in lines:
+                line = line.strip()
+                # Function definitions
+                if re.match(r'(def |function |const \w+\s*=|class |export |module\.exports)', line):
+                    definitions.append(line)
+                # Component definitions (React/Vue)
+                elif re.match(r'(export default|const \w+:\s*React)', line):
+                    definitions.append(line)
+                    
+            if definitions:
+                summary.append("// Key definitions:")
+                summary.extend(definitions[:15])  # Limit to 15 definitions
+                
+            return '\n'.join(summary) if summary else f"// File: {os.path.basename(file_path)}\n// No key patterns detected"
+            
+        except Exception as e:
+            return f"// Error reading {file_path}: {e}"
+
+    def get_project_overview(self, directory):
+        """Generate a smart project overview"""
+        overview = []
+        
+        # Look for key indicator files
+        tech_stack = set()
+        frameworks = set()
+        
+        for root, dirs, files in os.walk(directory):
+            dirs[:] = [d for d in dirs if d not in self.skip_dirs]
+            
+            for file in files:
+                if file == 'package.json':
+                    tech_stack.add('Node.js/npm')
+                elif file == 'requirements.txt' or file == 'pyproject.toml':
+                    tech_stack.add('Python')
+                elif file == 'Cargo.toml':
+                    tech_stack.add('Rust')
+                elif file == 'composer.json':
+                    tech_stack.add('PHP')
+                elif file.endswith('.tsx') or file.endswith('.jsx'):
+                    frameworks.add('React')
+                elif file.endswith('.vue'):
+                    frameworks.add('Vue.js')
+                elif file.endswith('.svelte'):
+                    frameworks.add('Svelte')
+                    
+        if tech_stack:
+            overview.append(f"Tech Stack: {', '.join(tech_stack)}")
+        if frameworks:
+            overview.append(f"Frameworks: {', '.join(frameworks)}")
+            
+        return overview
+
+    def estimate_project_size(self, directory):
+        """Estimate total project size and provide breakdown"""
+        directory = os.path.abspath(directory)
+        if not os.path.exists(directory):
+            raise ValueError(f"Directory does not exist: {directory}")
+
+        stats = {
+            'critical_files': [],
+            'important_files': [],
+            'ignored_files': [],
+            'other_files': [],
+            'total_size': 0,
+            'estimated_tokens': 0
+        }
+        
+        for root, dirs, files in os.walk(directory):
+            dirs[:] = [d for d in dirs if d not in self.skip_dirs]
+            
+            for file in files:
+                file_path = os.path.join(root, file)
+                rel_path = os.path.relpath(file_path, directory)
+                
+                try:
+                    file_size = os.path.getsize(file_path)
+                    file_ext = Path(file_path).suffix.lower()
+                    
+                    file_info = {
+                        'path': rel_path,
+                        'size': file_size,
+                        'extension': file_ext
+                    }
+                    
+                    stats['total_size'] += file_size
+                    
+                    if self.should_ignore_file(file_path):
+                        stats['ignored_files'].append(file_info)
+                    elif file in self.critical_files:
+                        stats['critical_files'].append(file_info)
+                        # Critical files included in full
+                        if file_size < self.max_file_size:
+                            stats['estimated_tokens'] += self.estimate_tokens_from_file_size(file_size)
+                    elif file_ext in self.important_extensions:
+                        stats['important_files'].append(file_info)
+                        # Important files get summarized (estimate 20% of original size)
+                        summary_size = min(file_size * 0.2, 2000)  # Cap summaries at ~500 tokens
+                        stats['estimated_tokens'] += self.estimate_tokens_from_file_size(summary_size)
+                    else:
+                        stats['other_files'].append(file_info)
+                        
+                except Exception as e:
+                    print(f"Error processing {rel_path}: {e}")
+        
+        # Add overhead for headers, structure, etc.
+        stats['estimated_tokens'] += 1000
+        
+        return stats
+
+    def estimate_tokens_from_file_size(self, size_bytes):
+        """Convert file size to estimated tokens"""
+        return size_bytes // 4  # Rough approximation
+
+    def print_size_estimate(self, directory):
+        """Print detailed size estimation"""
+        stats = self.estimate_project_size(directory)
+        
+        print(f"\n{'='*60}")
+        print(f"PROJECT SIZE ESTIMATION")
+        print(f"{'='*60}")
+        print(f"Directory: {directory}")
+        print(f"Total files found: {len(stats['critical_files']) + len(stats['important_files']) + len(stats['ignored_files']) + len(stats['other_files'])}")
+        print(f"Total disk size: {self.format_file_size(stats['total_size'])}")
+        print(f"\nEstimated context tokens: ~{stats['estimated_tokens']:,}")
+        print(f"Estimated context size: ~{self.format_file_size(stats['estimated_tokens'] * 4)}")
+        
+        if stats['estimated_tokens'] > self.max_tokens:
+            print(f"⚠️  Estimated size ({stats['estimated_tokens']:,}) exceeds limit ({self.max_tokens:,})")
+            print(f"   Consider increasing --max-tokens or the script will truncate content")
+        else:
+            print(f"✅ Estimated size fits within token limit ({self.max_tokens:,})")
+        
+        print(f"\nBREAKDOWN:")
+        print(f"Critical config files: {len(stats['critical_files'])} files")
+        if stats['critical_files']:
+            total_critical_size = sum(f['size'] for f in stats['critical_files'])
+            print(f"  └─ Total size: {self.format_file_size(total_critical_size)}")
+            for f in sorted(stats['critical_files'], key=lambda x: x['size'], reverse=True)[:5]:
+                print(f"     • {f['path']} ({self.format_file_size(f['size'])})")
+            if len(stats['critical_files']) > 5:
+                print(f"     • ... and {len(stats['critical_files']) - 5} more")
+        
+        print(f"\nImportant source files: {len(stats['important_files'])} files (will be summarized)")
+        if stats['important_files']:
+            # Group by extension
+            by_ext = {}
+            for f in stats['important_files']:
+                ext = f['extension'] or 'no extension'
+                if ext not in by_ext:
+                    by_ext[ext] = []
+                by_ext[ext].append(f)
+            
+            for ext, files in sorted(by_ext.items()):
+                total_size = sum(f['size'] for f in files)
+                print(f"  └─ {ext}: {len(files)} files, {self.format_file_size(total_size)}")
+        
+        print(f"\nIgnored files: {len(stats['ignored_files'])} files")
+        if stats['ignored_files']:
+            total_ignored_size = sum(f['size'] for f in stats['ignored_files'])
+            print(f"  └─ Total size: {self.format_file_size(total_ignored_size)} (skipped)")
+            # Show some examples
+            examples = sorted(stats['ignored_files'], key=lambda x: x['size'], reverse=True)[:3]
+            for f in examples:
+                print(f"     • {f['path']} ({self.format_file_size(f['size'])})")
+        
+        print(f"\nOther files: {len(stats['other_files'])} files (listed only)")
+        
+        print(f"\n{'='*60}")
+
+    def generate_smart_context(self, directory, output_file=None):
+        """Generate context with intelligent prioritization"""
+        directory = os.path.abspath(directory)
+        if not os.path.exists(directory):
+            raise ValueError(f"Directory does not exist: {directory}")
+
+        output_lines = []
+        self.current_tokens = 0
+        
+        # Header
+        header = [
+            "=" * 60,
+            "SMART AI PROJECT CONTEXT",
+            "=" * 60,
+            f"Generated: {datetime.now().isoformat()}",
+            f"Directory: {directory}",
+            ""
+        ]
+        output_lines.extend(header)
+        self.current_tokens += self.estimate_tokens('\n'.join(header))
+        
+        # Project Overview
+        overview = self.get_project_overview(directory)
+        if overview:
+            overview_section = ["PROJECT OVERVIEW", "-" * 30] + overview + [""]
+            output_lines.extend(overview_section)
+            self.current_tokens += self.estimate_tokens('\n'.join(overview_section))
+        
+        # Collect files by priority
+        critical_files = []
+        important_files = []
+        other_files = []
+        
+        for root, dirs, files in os.walk(directory):
+            dirs[:] = [d for d in dirs if d not in self.skip_dirs]
+            
+            for file in files:
+                file_path = os.path.join(root, file)
+                rel_path = os.path.relpath(file_path, directory)
+                
+                if self.should_ignore_file(file_path):
+                    continue
+                    
+                try:
+                    file_size = os.path.getsize(file_path)
+                    file_ext = Path(file_path).suffix.lower()
+                    
+                    file_info = {
+                        'path': rel_path,
+                        'full_path': file_path,
+                        'size': file_size,
+                        'extension': file_ext
+                    }
+                    
+                    if file in self.critical_files:
+                        critical_files.append(file_info)
+                    elif file_ext in self.important_extensions:
+                        important_files.append(file_info)
+                    else:
+                        other_files.append(file_info)
+                        
+                except Exception as e:
+                    print(f"Error processing {rel_path}: {e}")
+        
+        # Add critical files (full content)
+        if critical_files:
+            output_lines.extend(["CRITICAL CONFIGURATION FILES", "=" * 40])
+            for file_info in sorted(critical_files, key=lambda x: x['path']):
+                if self.current_tokens > self.max_tokens * 0.8:  # Reserve 20% for other content
+                    output_lines.append(f"[Remaining files truncated due to size limit]")
+                    break
+                    
+                content = self.read_file_content(file_info['full_path'])
+                if content:
+                    file_section = [f"\n--- {file_info['path']} ---", content]
+                    tokens = self.estimate_tokens('\n'.join(file_section))
+                    if self.current_tokens + tokens < self.max_tokens * 0.8:
+                        output_lines.extend(file_section)
+                        self.current_tokens += tokens
+            output_lines.append("")
+        
+        # Add important files (summarized)
+        if important_files and self.current_tokens < self.max_tokens * 0.9:
+            output_lines.extend(["KEY SOURCE FILES (SUMMARIZED)", "=" * 40])
+            
+            # Sort by likely importance
+            important_files.sort(key=lambda x: (
+                'main' in x['path'] or 'index' in x['path'],  # Entry points first
+                x['size']  # Then by size
+            ), reverse=True)
+            
+            for file_info in important_files[:20]:  # Limit to 20 files
+                if self.current_tokens > self.max_tokens * 0.95:
+                    break
+                    
+                summary = self.summarize_code_file(file_info['full_path'])
+                if summary:
+                    file_section = [f"\n--- {file_info['path']} ---", summary]
+                    tokens = self.estimate_tokens('\n'.join(file_section))
+                    if self.current_tokens + tokens < self.max_tokens * 0.95:
+                        output_lines.extend(file_section)
+                        self.current_tokens += tokens
+        
+        # Add file listing (compact)
+        all_files = critical_files + important_files + other_files
+        if all_files:
+            output_lines.extend(["\nFILE INVENTORY", "-" * 30])
+            for file_info in sorted(all_files, key=lambda x: x['path'])[:50]:
+                size_str = self.format_file_size(file_info['size'])
+                output_lines.append(f"{file_info['path']} ({size_str})")
+        
+        output_lines.extend(["\n" + "=" * 60, "END OF CONTEXT", "=" * 60])
+        
+        final_output = '\n'.join(output_lines)
+        final_tokens = self.estimate_tokens(final_output)
+        
+        print(f"Generated context: ~{final_tokens:,} tokens ({len(final_output):,} chars)")
+        
+        if output_file:
+            with open(output_file, 'w', encoding='utf-8') as f:
+                f.write(final_output)
+            print(f"Context written to: {output_file}")
+        else:
+            return final_output
+
+    def read_file_content(self, file_path):
+        """Read file content with encoding handling"""
+        encodings = ['utf-8', 'utf-8-sig', 'latin-1']
+        
+        for encoding in encodings:
+            try:
+                with open(file_path, 'r', encoding=encoding) as f:
+                    return f.read()
+            except (UnicodeDecodeError, PermissionError):
+                continue
+            except Exception:
+                break
+        return None
+
+    def format_file_size(self, size):
+        """Format file size in human readable format"""
+        for unit in ['B', 'KB', 'MB']:
+            if size < 1024.0:
+                return f"{size:.0f}{unit}"
+            size /= 1024.0
+        return f"{size:.1f}GB"
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Generate smart AI context from project')
+    parser.add_argument('directory', 
+                       help='Directory to scan (required)')
+    parser.add_argument('-o', '--output', default='smart_context.txt',
+                       help='Output file (default: smart_context.txt)')
+    parser.add_argument('--max-tokens', type=int, default=15000,
+                       help='Maximum tokens to generate (default: 15000)')
+    parser.add_argument('--stdout', action='store_true',
+                       help='Output to stdout instead of file')
+    parser.add_argument('--estimate-size', action='store_true',
+                       help='Estimate project size without generating context')
+    
+    # Show help if no arguments provided
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(1)
+    
+    args = parser.parse_args()
+    
+    try:
+        generator = EnhancedAIContextGenerator(max_tokens=args.max_tokens)
+        
+        if args.estimate_size:
+            generator.print_size_estimate(args.directory)
+        elif args.stdout:
+            context = generator.generate_smart_context(args.directory)
+            print(context)
+        else:
+            generator.generate_smart_context(args.directory, args.output)
+            
+    except Exception as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
+
+
+if __name__ == '__main__':
+    main()
