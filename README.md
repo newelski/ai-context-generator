@@ -1,6 +1,7 @@
 # AI Context Generator
 
-## Analyze any directory and create a _single_ AI context prompt.
+### Analyze a project and create a _single-file_ AI context prompt.
+*I created this when I didn't have access to a CLI or IDE to read files and had to paste project details into Claude/ChatGPT web chat.*
 
 ## Installation
 
@@ -9,6 +10,24 @@
 3. Place in your PATH or run directly: `./aic`
 
 **Requirements**: Python 3.6+
+
+## Usage
+
+```bash
+aic [-h] [-o OUTPUT] [--max-tokens MAX_TOKENS] [--stdout] [--estimate-size] directory
+
+positional arguments:
+  directory             Directory to scan (required)
+
+options:
+  -h, --help            Show help message
+  -o OUTPUT, --output OUTPUT
+                        Output file (default: smart_context.txt)
+  --max-tokens MAX_TOKENS
+                        Maximum tokens to generate (default: 15000)
+  --stdout              Output to stdout instead of file
+  --estimate-size       Estimate project size without generating context
+```
 
 ## Example Output
 
@@ -55,31 +74,13 @@ Other files: 76 files (listed only)
 
 ============================================================
 ```
-##
+## Summary
 
 **Why you need it**: When working with AI assistants that have context limits, manually copying and pasting files is tedious and inefficient. `aic` automatically creates the optimal context for your specific project, saving time and ensuring nothing important gets missed.
 
 **What it does**: Scans your codebase and generates a structured, token-optimized summary containing your project's most important files, configurations, and code patterns.
 
 **How it works**: Intelligently prioritizes critical config files (full content), summarizes source code by extracting key functions and imports, and skips irrelevant files like build artifacts and dependencies.
-
-## Usage
-
-```bash
-aic [-h] [-o OUTPUT] [--max-tokens MAX_TOKENS] [--stdout] [--estimate-size] directory
-
-positional arguments:
-  directory             Directory to scan (required)
-
-options:
-  -h, --help            Show help message
-  -o OUTPUT, --output OUTPUT
-                        Output file (default: smart_context.txt)
-  --max-tokens MAX_TOKENS
-                        Maximum tokens to generate (default: 15000)
-  --stdout              Output to stdout instead of file
-  --estimate-size       Estimate project size without generating context
-```
 
 ## Supported Languages & Frameworks
 
