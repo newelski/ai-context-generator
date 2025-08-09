@@ -1,8 +1,11 @@
+
 # AI Context Generator
 
 ### Analyze a project and create a _single-file_ AI context prompt.
 *I created this when I didn't have access to a CLI or IDE to read files and had to paste project details into Claude/ChatGPT web chat.*
 
+![](https://img.shields.io/badge/python-3.6-orange) ![](https://img.shields.io/badge/vibe-coding-blue) ![](https://img.shields.io/badge/Claude-Opus_4.1-eeeeee)
+![](https://img.shields.io/badge/version-1.3.37-green)
 ## Installation
 
 1. Download the `aic` script
