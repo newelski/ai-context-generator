@@ -31,7 +31,7 @@
 
 ## Usage
 
-```
+```bash
 aic [-h] [-o OUTPUT] [--max-tokens MAX_TOKENS] [--stdout] [--estimate-size] directory
 
 positional arguments:
