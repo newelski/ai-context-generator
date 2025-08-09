@@ -13,6 +13,53 @@
 3. Place in your PATH or run directly: `./aic`
 
 **Requirements**: Python 3.6+
+
+## Example Output
+
+`./aic taildwindcss --estimate-size` of the [tailwindcss](https://github.com/tailwindlabs/tailwindcss) repo
+
+```sh
+============================================================
+PROJECT SIZE ESTIMATION
+============================================================
+Directory: ./tailwindcss
+Total files found: 520
+Total disk size: 5MB
+
+Estimated context tokens: ~79,097.0
+Estimated context size: ~309KB
+⚠️  Estimated size (79,097.0) exceeds limit (15,000)
+   Consider increasing --max-tokens or the script will truncate content
+
+BREAKDOWN:
+Critical config files: 68 files
+  └─ Total size: 50KB
+     • packages/tailwindcss/package.json (4KB)
+     • crates/node/package.json (2KB)
+     • package.json (2KB)
+     • packages/@tailwindcss-standalone/package.json (2KB)
+     • README.md (2KB)
+     • ... and 63 more
+
+Important source files: 351 files (will be summarized)
+  └─ .css: 17 files, 26KB
+  └─ .html: 3 files, 28KB
+  └─ .js: 8 files, 5KB
+  └─ .rs: 54 files, 599KB
+  └─ .ts: 263 files, 1MB
+  └─ .tsx: 6 files, 2KB
+
+Ignored files: 25 files
+  └─ Total size: 2MB (skipped)
+     • packages/tailwindcss/src/utilities.test.ts (754KB)
+     • packages/tailwindcss/src/index.test.ts (136KB)
+     • packages/tailwindcss/src/compat/plugin-api.test.ts (114KB)
+
+Other files: 76 files (listed only)
+
+============================================================
+```
+
 ## Quick Start
 
 ```bash
