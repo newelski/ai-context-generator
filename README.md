@@ -1,10 +1,6 @@
 # AI Context Generator
 
-**What it does**: Scans your codebase and generates a structured, token-optimized summary containing your project's most important files, configurations, and code patterns.
-
-**How it works**: Intelligently prioritizes critical config files (full content), summarizes source code by extracting key functions and imports, and skips irrelevant files like build artifacts and dependencies.
-
-**Why you need it**: When working with AI assistants that have context limits, manually copying and pasting files is tedious and inefficient. `aic` automatically creates the optimal context for your specific project, saving time and ensuring nothing important gets missed.
+## Analyze any directory and create a _single_ AI context prompt.
 
 ## Installation
 
@@ -16,7 +12,7 @@
 
 ## Example Output
 
-`./aic taildwindcss --estimate-size` of the [tailwindcss](https://github.com/tailwindlabs/tailwindcss) repo
+See [full context prompt example](https://github.com/newelski/ai-context-generator/blob/main/smart_context.txt) or just `--estimate-size` of and exmple codebase ([tailwindcss](https://github.com/tailwindlabs/tailwindcss)):
 
 ```sh
 ============================================================
@@ -59,23 +55,13 @@ Other files: 76 files (listed only)
 
 ============================================================
 ```
-See FULL context output of the of the [tailwindcss](https://github.com/tailwindlabs/tailwindcss) repo
+##
 
-## Quick Start
+**Why you need it**: When working with AI assistants that have context limits, manually copying and pasting files is tedious and inefficient. `aic` automatically creates the optimal context for your specific project, saving time and ensuring nothing important gets missed.
 
-```bash
-# Basic usage - analyze current directory
-./aic .
+**What it does**: Scans your codebase and generates a structured, token-optimized summary containing your project's most important files, configurations, and code patterns.
 
-# Estimate project size before generating context  
-./aic --estimate-size ./my-project
-
-# Output to stdout for piping
-./aic --stdout ./my-project | pbcopy
-
-# Customize token limit
-./aic --max-tokens 20000 ./large-project
-```
+**How it works**: Intelligently prioritizes critical config files (full content), summarizes source code by extracting key functions and imports, and skips irrelevant files like build artifacts and dependencies.
 
 ## Usage
 
