@@ -59,6 +59,7 @@ Other files: 76 files (listed only)
 
 ============================================================
 ```
+See FULL context output of the of the [tailwindcss](https://github.com/tailwindlabs/tailwindcss) repo
 
 ## Quick Start
 

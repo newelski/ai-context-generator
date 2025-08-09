@@ -1,0 +1,2009 @@
+============================================================
+SMART AI PROJECT CONTEXT
+============================================================
+Generated: 2025-08-09T05:51:32.464562
+Directory: ./tailwindcss
+
+PROJECT OVERVIEW
+------------------------------
+Tech Stack: Node.js/npm, Rust
+Frameworks: React
+
+CRITICAL CONFIGURATION FILES
+========================================
+
+--- Cargo.toml ---
+[workspace]
+resolver = "2"
+members = ["crates/*"]
+
+[profile.release]
+lto = true
+
+
+--- README.md ---
+<p align="center">
+  <a href="https://tailwindcss.com" target="_blank">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/tailwindlabs/tailwindcss/HEAD/.github/logo-dark.svg">
+      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/tailwindlabs/tailwindcss/HEAD/.github/logo-light.svg">
+      <img alt="Tailwind CSS" src="https://raw.githubusercontent.com/tailwindlabs/tailwindcss/HEAD/.github/logo-light.svg" width="350" height="70" style="max-width: 100%;">
+    </picture>
+  </a>
+</p>
+
+<p align="center">
+  A utility-first CSS framework for rapidly building custom user interfaces.
+</p>
+
+<p align="center">
+    <a href="https://github.com/tailwindlabs/tailwindcss/actions"><img src="https://img.shields.io/github/actions/workflow/status/tailwindlabs/tailwindcss/ci.yml?branch=next" alt="Build Status"></a>
+    <a href="https://www.npmjs.com/package/tailwindcss"><img src="https://img.shields.io/npm/dt/tailwindcss.svg" alt="Total Downloads"></a>
+    <a href="https://github.com/tailwindcss/tailwindcss/releases"><img src="https://img.shields.io/npm/v/tailwindcss.svg" alt="Latest Release"></a>
+    <a href="https://github.com/tailwindcss/tailwindcss/blob/master/LICENSE"><img src="https://img.shields.io/npm/l/tailwindcss.svg" alt="License"></a>
+</p>
+
+---
+
+## Documentation
+
+For full documentation, visit [tailwindcss.com](https://tailwindcss.com).
+
+## Community
+
+For help, discussion about best practices, or feature ideas:
+
+[Discuss Tailwind CSS on GitHub](https://github.com/tailwindcss/tailwindcss/discussions)
+
+## Contributing
+
+If you're interested in contributing to Tailwind CSS, please read our [contributing docs](https://github.com/tailwindcss/tailwindcss/blob/next/.github/CONTRIBUTING.md) **before submitting a pull request**.
+
+
+--- crates/classification-macros/Cargo.toml ---
+[package]
+name = "classification-macros"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn = "2"
+quote = "1"
+proc-macro2 = "1"
+
+
+--- crates/ignore/Cargo.toml ---
+[package]
+name = "ignore"
+version = "0.4.23"  #:version
+authors = ["Andrew Gallant <jamslam@gmail.com>"]
+description = """
+A fast library for efficiently matching ignore files such as `.gitignore`
+against file paths.
+"""
+documentation = "https://docs.rs/ignore"
+homepage = "https://github.com/BurntSushi/ripgrep/tree/master/crates/ignore"
+repository = "https://github.com/BurntSushi/ripgrep/tree/master/crates/ignore"
+readme = "README.md"
+keywords = ["glob", "ignore", "gitignore", "pattern", "file"]
+license = "Unlicense OR MIT"
+edition = "2021"
+
+[lib]
+name = "ignore"
+bench = false
+
+[dependencies]
+crossbeam-deque = "0.8.3"
+globset = "0.4.16"
+log = "0.4.20"
+memchr = "2.6.3"
+same-file = "1.0.6"
+walkdir = "2.4.0"
+dunce = "1.0.5"
+
+[dependencies.regex-automata]
+version = "0.4.0"
+default-features = false
+features = ["std", "perf", "syntax", "meta", "nfa", "hybrid", "dfa-onepass"]
+
+[target.'cfg(windows)'.dependencies.winapi-util]
+version = "0.1.2"
+
+[dev-dependencies]
+bstr = { version = "1.6.2", default-features = false, features = ["std"] }
+crossbeam-channel = "0.5.8"
+
+[features]
+# DEPRECATED. It is a no-op. SIMD is done automatically through runtime
+# dispatch.
+simd-accel = []
+
+
+--- crates/ignore/README.md ---
+# ignore
+
+The ignore crate provides a fast recursive directory iterator that respects
+various filters such as globs, file types and `.gitignore` files. This crate
+also provides lower level direct access to gitignore and file type matchers.
+
+[![Build status](https://github.com/BurntSushi/ripgrep/workflows/ci/badge.svg)](https://github.com/BurntSushi/ripgrep/actions)
+[![](https://img.shields.io/crates/v/ignore.svg)](https://crates.io/crates/ignore)
+
+Dual-licensed under MIT or the [UNLICENSE](https://unlicense.org/).
+
+### Documentation
+
+[https://docs.rs/ignore](https://docs.rs/ignore)
+
+### Usage
+
+Add this to your `Cargo.toml`:
+
+```toml
+[dependencies]
+ignore = "0.4"
+```
+
+### Example
+
+This example shows the most basic usage of this crate. This code will
+recursively traverse the current directory while automatically filtering out
+files and directories according to ignore globs found in files like
+`.ignore` and `.gitignore`:
+
+```rust,no_run
+use ignore::Walk;
+
+for result in Walk::new("./") {
+    // Each item yielded by the iterator is either a directory entry or an
+    // error, so either print the path or the error.
+    match result {
+        Ok(entry) => println!("{}", entry.path().display()),
+        Err(err) => println!("ERROR: {}", err),
+    }
+}
+```
+
+### Example: advanced
+
+By default, the recursive directory iterator will ignore hidden files and
+directories. This can be disabled by building the iterator with `WalkBuilder`:
+
+```rust,no_run
+use ignore::WalkBuilder;
+
+for result in WalkBuilder::new("./").hidden(false).build() {
+    println!("{:?}", result);
+}
+```
+
+See the documentation for `WalkBuilder` for many other options.
+
+
+--- crates/node/Cargo.toml ---
+[package]
+edition = "2021"
+name = "tailwind-oxide"
+version = "0.0.0"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+# Default enable napi4 feature, see https://nodejs.org/api/n-api.html#node-api-version-matrix
+napi = { version = "2.16.17", default-features = false, features = ["napi4"] }
+napi-derive = "2.16.13"
+tailwindcss-oxide = { path = "../oxide" }
+rayon = "1.10.0"
+
+[build-dependencies]
+napi-build = "2.1.6"
+
+
+--- crates/node/npm/android-arm-eabi/README.md ---
+# `@tailwindcss/oxide-android-arm-eabi`
+
+This is the **armv7-linux-android-eabi** binary for `@tailwindcss/oxide`
+
+
+--- crates/node/npm/android-arm-eabi/package.json ---
+{
+  "name": "@tailwindcss/oxide-android-arm-eabi",
+  "version": "4.1.11",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tailwindlabs/tailwindcss.git",
+    "directory": "crates/node/npm/android-arm-eabi"
+  },
+  "os": [
+    "android"
+  ],
+  "cpu": [
+    "arm"
+  ],
+  "main": "tailwindcss-oxide.android-arm-eabi.node",
+  "files": [
+    "tailwindcss-oxide.android-arm-eabi.node"
+  ],
+  "publishConfig": {
+    "provenance": true,
+    "access": "public"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">= 10"
+  }
+}
+
+
+--- crates/node/npm/android-arm64/README.md ---
+# `@tailwindcss/oxide-android-arm64`
+
+This is the **aarch64-linux-android** binary for `@tailwindcss/oxide`
+
+
+--- crates/node/npm/android-arm64/package.json ---
+{
+  "name": "@tailwindcss/oxide-android-arm64",
+  "version": "4.1.11",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tailwindlabs/tailwindcss.git",
+    "directory": "crates/node/npm/android-arm64"
+  },
+  "os": [
+    "android"
+  ],
+  "cpu": [
+    "arm64"
+  ],
+  "main": "tailwindcss-oxide.android-arm64.node",
+  "files": [
+    "tailwindcss-oxide.android-arm64.node"
+  ],
+  "publishConfig": {
+    "provenance": true,
+    "access": "public"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">= 10"
+  }
+}
+
+
+--- crates/node/npm/darwin-arm64/README.md ---
+# `@tailwindcss/oxide-darwin-arm64`
+
+This is the **aarch64-apple-darwin** binary for `@tailwindcss/oxide`
+
+
+--- crates/node/npm/darwin-arm64/package.json ---
+{
+  "name": "@tailwindcss/oxide-darwin-arm64",
+  "version": "4.1.11",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tailwindlabs/tailwindcss.git",
+    "directory": "crates/node/npm/darwin-arm64"
+  },
+  "os": [
+    "darwin"
+  ],
+  "cpu": [
+    "arm64"
+  ],
+  "main": "tailwindcss-oxide.darwin-arm64.node",
+  "files": [
+    "tailwindcss-oxide.darwin-arm64.node"
+  ],
+  "publishConfig": {
+    "provenance": true,
+    "access": "public"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">= 10"
+  }
+}
+
+
+--- crates/node/npm/darwin-x64/README.md ---
+# `@tailwindcss/oxide-darwin-x64`
+
+This is the **x86_64-apple-darwin** binary for `@tailwindcss/oxide`
+
+
+--- crates/node/npm/darwin-x64/package.json ---
+{
+  "name": "@tailwindcss/oxide-darwin-x64",
+  "version": "4.1.11",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tailwindlabs/tailwindcss.git",
+    "directory": "crates/node/npm/darwin-x64"
+  },
+  "os": [
+    "darwin"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "main": "tailwindcss-oxide.darwin-x64.node",
+  "files": [
+    "tailwindcss-oxide.darwin-x64.node"
+  ],
+  "publishConfig": {
+    "provenance": true,
+    "access": "public"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">= 10"
+  }
+}
+
+
+--- crates/node/npm/freebsd-x64/README.md ---
+# `@tailwindcss/oxide-freebsd-x64`
+
+This is the **x86_64-unknown-freebsd** binary for `@tailwindcss/oxide`
+
+
+--- crates/node/npm/freebsd-x64/package.json ---
+{
+  "name": "@tailwindcss/oxide-freebsd-x64",
+  "version": "4.1.11",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tailwindlabs/tailwindcss.git",
+    "directory": "crates/node/npm/freebsd-x64"
+  },
+  "os": [
+    "freebsd"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "main": "tailwindcss-oxide.freebsd-x64.node",
+  "files": [
+    "tailwindcss-oxide.freebsd-x64.node"
+  ],
+  "publishConfig": {
+    "provenance": true,
+    "access": "public"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">= 10"
+  }
+}
+
+
+--- crates/node/npm/linux-arm-gnueabihf/README.md ---
+# `@tailwindcss/oxide-linux-arm-gnueabihf`
+
+This is the **armv7-unknown-linux-gnueabihf** binary for `@tailwindcss/oxide`
+
+
+--- crates/node/npm/linux-arm-gnueabihf/package.json ---
+{
+  "name": "@tailwindcss/oxide-linux-arm-gnueabihf",
+  "version": "4.1.11",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tailwindlabs/tailwindcss.git",
+    "directory": "crates/node/npm/linux-arm-gnueabihf"
+  },
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "arm"
+  ],
+  "main": "tailwindcss-oxide.linux-arm-gnueabihf.node",
+  "files": [
+    "tailwindcss-oxide.linux-arm-gnueabihf.node"
+  ],
+  "publishConfig": {
+    "provenance": true,
+    "access": "public"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">= 10"
+  }
+}
+
+
+--- crates/node/npm/linux-arm64-gnu/README.md ---
+# `@tailwindcss/oxide-linux-arm64-gnu`
+
+This is the **aarch64-unknown-linux-gnu** binary for `@tailwindcss/oxide`
+
+
+--- crates/node/npm/linux-arm64-gnu/package.json ---
+{
+  "name": "@tailwindcss/oxide-linux-arm64-gnu",
+  "version": "4.1.11",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tailwindlabs/tailwindcss.git",
+    "directory": "crates/node/npm/linux-arm64-gnu"
+  },
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "arm64"
+  ],
+  "main": "tailwindcss-oxide.linux-arm64-gnu.node",
+  "files": [
+    "tailwindcss-oxide.linux-arm64-gnu.node"
+  ],
+  "publishConfig": {
+    "provenance": true,
+    "access": "public"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">= 10"
+  },
+  "libc": [
+    "glibc"
+  ]
+}
+
+
+--- crates/node/npm/linux-arm64-musl/README.md ---
+# `@tailwindcss/oxide-linux-arm64-musl`
+
+This is the **aarch64-unknown-linux-musl** binary for `@tailwindcss/oxide`
+
+
+--- crates/node/npm/linux-arm64-musl/package.json ---
+{
+  "name": "@tailwindcss/oxide-linux-arm64-musl",
+  "version": "4.1.11",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tailwindlabs/tailwindcss.git",
+    "directory": "crates/node/npm/linux-arm64-musl"
+  },
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "arm64"
+  ],
+  "main": "tailwindcss-oxide.linux-arm64-musl.node",
+  "files": [
+    "tailwindcss-oxide.linux-arm64-musl.node"
+  ],
+  "publishConfig": {
+    "provenance": true,
+    "access": "public"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">= 10"
+  },
+  "libc": [
+    "musl"
+  ]
+}
+
+
+--- crates/node/npm/linux-x64-gnu/README.md ---
+# `@tailwindcss/oxide-linux-x64-gnu`
+
+This is the **x86_64-unknown-linux-gnu** binary for `@tailwindcss/oxide`
+
+
+--- crates/node/npm/linux-x64-gnu/package.json ---
+{
+  "name": "@tailwindcss/oxide-linux-x64-gnu",
+  "version": "4.1.11",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tailwindlabs/tailwindcss.git",
+    "directory": "crates/node/npm/linux-x64-gnu"
+  },
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "main": "tailwindcss-oxide.linux-x64-gnu.node",
+  "files": [
+    "tailwindcss-oxide.linux-x64-gnu.node"
+  ],
+  "publishConfig": {
+    "provenance": true,
+    "access": "public"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">= 10"
+  },
+  "libc": [
+    "glibc"
+  ]
+}
+
+
+--- crates/node/npm/linux-x64-musl/README.md ---
+# `@tailwindcss/oxide-linux-x64-musl`
+
+This is the **x86_64-unknown-linux-musl** binary for `@tailwindcss/oxide`
+
+
+--- crates/node/npm/linux-x64-musl/package.json ---
+{
+  "name": "@tailwindcss/oxide-linux-x64-musl",
+  "version": "4.1.11",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tailwindlabs/tailwindcss.git",
+    "directory": "crates/node/npm/linux-x64-musl"
+  },
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "main": "tailwindcss-oxide.linux-x64-musl.node",
+  "files": [
+    "tailwindcss-oxide.linux-x64-musl.node"
+  ],
+  "publishConfig": {
+    "provenance": true,
+    "access": "public"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">= 10"
+  },
+  "libc": [
+    "musl"
+  ]
+}
+
+
+--- crates/node/npm/wasm32-wasi/README.md ---
+# `@tailwindcss/oxide-wasm32-wasi`
+
+This is the **wasm32-wasip1-threads** binary for `@tailwindcss/oxide`
+
+
+--- crates/node/npm/wasm32-wasi/package.json ---
+{
+  "name": "@tailwindcss/oxide-wasm32-wasi",
+  "version": "4.1.11",
+  "cpu": [
+    "wasm32"
+  ],
+  "main": "tailwindcss-oxide.wasi.cjs",
+  "files": [
+    "tailwindcss-oxide.wasm32-wasi.wasm",
+    "tailwindcss-oxide.wasi.cjs",
+    "tailwindcss-oxide.wasi-browser.js",
+    "wasi-worker.mjs",
+    "wasi-worker-browser.mjs"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "publishConfig": {
+    "provenance": true,
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tailwindlabs/tailwindcss.git",
+    "directory": "crates/node"
+  },
+  "browser": "tailwindcss-oxide.wasi-browser.js",
+  "dependencies": {
+    "@napi-rs/wasm-runtime": "^0.2.12",
+    "@emnapi/core": "^1.4.4",
+    "@emnapi/runtime": "^1.4.4",
+    "@tybys/wasm-util": "^0.10.0",
+    "@emnapi/wasi-threads": "^1.0.4",
+    "tslib": "^2.8.0"
+  },
+  "bundledDependencies": [
+    "@napi-rs/wasm-runtime",
+    "@emnapi/core",
+    "@emnapi/runtime",
+    "@tybys/wasm-util",
+    "@emnapi/wasi-threads",
+    "tslib"
+  ]
+}
+
+
+--- crates/node/npm/win32-arm64-msvc/README.md ---
+# `@tailwindcss/oxide-win32-arm64-msvc`
+
+This is the **arm64-pc-windows-msvc** binary for `@tailwindcss/oxide`
+
+
+--- crates/node/npm/win32-arm64-msvc/package.json ---
+{
+  "name": "@tailwindcss/oxide-win32-arm64-msvc",
+  "version": "4.1.11",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tailwindlabs/tailwindcss.git",
+    "directory": "crates/node/npm/win32-arm64-msvc"
+  },
+  "os": [
+    "win32"
+  ],
+  "cpu": [
+    "arm64"
+  ],
+  "main": "tailwindcss-oxide.win32-arm64-msvc.node",
+  "files": [
+    "tailwindcss-oxide.win32-arm64-msvc.node"
+  ],
+  "publishConfig": {
+    "provenance": true,
+    "access": "public"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">= 10"
+  }
+}
+
+
+--- crates/node/npm/win32-x64-msvc/README.md ---
+# `@tailwindcss/oxide-win32-x64-msvc`
+
+This is the **x86_64-pc-windows-msvc** binary for `@tailwindcss/oxide`
+
+
+--- crates/node/npm/win32-x64-msvc/package.json ---
+{
+  "name": "@tailwindcss/oxide-win32-x64-msvc",
+  "version": "4.1.11",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tailwindlabs/tailwindcss.git",
+    "directory": "crates/node/npm/win32-x64-msvc"
+  },
+  "os": [
+    "win32"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "main": "tailwindcss-oxide.win32-x64-msvc.node",
+  "files": [
+    "tailwindcss-oxide.win32-x64-msvc.node"
+  ],
+  "publishConfig": {
+    "provenance": true,
+    "access": "public"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">= 10"
+  }
+}
+
+
+--- crates/node/package.json ---
+{
+  "name": "@tailwindcss/oxide",
+  "version": "4.1.11",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tailwindlabs/tailwindcss.git",
+    "directory": "crates/node"
+  },
+  "main": "index.js",
+  "types": "index.d.ts",
+  "napi": {
+    "binaryName": "tailwindcss-oxide",
+    "packageName": "@tailwindcss/oxide",
+    "targets": [
+      "armv7-linux-androideabi",
+      "aarch64-linux-android",
+      "aarch64-apple-darwin",
+      "aarch64-unknown-linux-gnu",
+      "aarch64-unknown-linux-musl",
+      "armv7-unknown-linux-gnueabihf",
+      "x86_64-unknown-linux-musl",
+      "x86_64-unknown-freebsd",
+      "i686-pc-windows-msvc",
+      "aarch64-pc-windows-msvc",
+      "wasm32-wasip1-threads"
+    ],
+    "wasm": {
+      "initialMemory": 16384,
+      "browser": {
+        "fs": true
+      }
+    }
+  },
+  "license": "MIT",
+  "dependencies": {
+    "tar": "^7.4.3",
+    "detect-libc": "^2.0.4"
+  },
+  "devDependencies": {
+    "@napi-rs/cli": "^3.0.0-alpha.78",
+    "@napi-rs/wasm-runtime": "^0.2.12",
+    "emnapi": "1.4.4"
+  },
+  "engines": {
+    "node": ">= 10"
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "scripts/install.js"
+  ],
+  "publishConfig": {
+    "provenance": true,
+    "access": "public"
+  },
+  "scripts": {
+    "artifacts": "napi artifacts",
+    "build": "pnpm run build:platform && pnpm run build:wasm",
+    "build:platform": "napi build --platform --release --no-const-enum",
+    "postbuild:platform": "node ./scripts/move-artifacts.mjs",
+    "build:wasm": "napi build --release --target wasm32-wasip1-threads --no-const-enum",
+    "postbuild:wasm": "node ./scripts/move-artifacts.mjs",
+    "dev": "cargo watch --quiet --shell 'npm run build'",
+    "build:debug": "napi build --platform --no-const-enum",
+    "version": "napi version",
+    "postinstall": "node ./scripts/install.js"
+  },
+  "optionalDependencies": {
+    "@tailwindcss/oxide-android-arm64": "workspace:*",
+    "@tailwindcss/oxide-darwin-arm64": "workspace:*",
+    "@tailwindcss/oxide-darwin-x64": "workspace:*",
+    "@tailwindcss/oxide-freebsd-x64": "workspace:*",
+    "@tailwindcss/oxide-linux-arm-gnueabihf": "workspace:*",
+    "@tailwindcss/oxide-linux-arm64-gnu": "workspace:*",
+    "@tailwindcss/oxide-linux-arm64-musl": "workspace:*",
+    "@tailwindcss/oxide-linux-x64-gnu": "workspace:*",
+    "@tailwindcss/oxide-linux-x64-musl": "workspace:*",
+    "@tailwindcss/oxide-wasm32-wasi": "workspace:*",
+    "@tailwindcss/oxide-win32-arm64-msvc": "workspace:*",
+    "@tailwindcss/oxide-win32-x64-msvc": "workspace:*"
+  }
+}
+
+
+--- crates/oxide/Cargo.toml ---
+[package]
+name = "tailwindcss-oxide"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bstr = "1.11.3"
+globwalk = "0.9.1"
+log = "0.4.22"
+rayon = "1.10.0"
+fxhash = { package = "rustc-hash", version = "2.1.1" }
+crossbeam = "0.8.4"
+tracing = { version = "0.1.40", features = [] }
+tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
+walkdir = "2.5.0"
+dunce = "1.0.5"
+bexpand = "1.2.0"
+fast-glob = "0.4.3"
+classification-macros = { path = "../classification-macros" }
+ignore = { path = "../ignore" }
+regex = "1.11.1"
+
+[dev-dependencies]
+tempfile = "3.13.0"
+pretty_assertions = "1.4.1"
+unicode-width = "0.2.0"
+
+
+--- crates/oxide/fuzz/Cargo.toml ---
+[package]
+name = "tailwindcss-oxide-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+
+[dependencies.tailwindcss-oxide]
+path = ".."
+
+# Prevent this from interfering with workspaces
+[workspace]
+members = ["."]
+
+[profile.release]
+debug = 1
+
+[[bin]]
+name = "parsing"
+path = "fuzz_targets/parsing.rs"
+test = false
+doc = false
+
+
+--- integrations/package.json ---
+{
+  "name": "internal-integrations",
+  "version": "0.0.0",
+  "private": true,
+  "devDependencies": {
+    "dedent": "1.6.0",
+    "fast-glob": "^3.3.3",
+    "source-map-js": "^1.2.1"
+  }
+}
+
+
+--- package.json ---
+{
+  "name": "@tailwindcss/root",
+  "private": true,
+  "version": "1.0.0",
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "printWidth": 100,
+    "plugins": [
+      "prettier-plugin-organize-imports"
+    ],
+    "overrides": [
+      {
+        "files": [
+          "tsconfig.json"
+        ],
+        "options": {
+          "parser": "jsonc"
+        }
+      },
+      {
+        "files": [
+          "integrations/**/*.ts"
+        ],
+        "options": {
+          "plugins": [
+            "prettier-plugin-embed",
+            "prettier-plugin-organize-imports"
+          ]
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "format": "prettier --write .",
+    "lint": "prettier --check . && turbo lint",
+    "build": "turbo build --filter=!./playgrounds/*",
+    "postbuild": "node ./scripts/pack-packages.mjs",
+    "dev": "turbo dev --filter=!./playgrounds/*",
+    "test": "cargo test && vitest run --hideSkippedTests",
+    "test:integrations": "vitest --root=./integrations",
+    "test:ui": "pnpm run --filter=tailwindcss test:ui && pnpm run --filter=@tailwindcss/browser test:ui",
+    "tdd": "vitest --hideSkippedTests",
+    "bench": "vitest bench",
+    "version-packages": "node ./scripts/version-packages.mjs",
+    "vite": "pnpm run --filter=vite-playground dev",
+    "nextjs": "pnpm run --filter=nextjs-playground dev"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.54.1",
+    "@types/node": "catalog:",
+    "postcss": "8.5.6",
+    "postcss-import": "^16.1.1",
+    "prettier": "catalog:",
+    "prettier-plugin-embed": "^0.5.0",
+    "prettier-plugin-organize-imports": "^4.2.0",
+    "tsup": "^8.5.0",
+    "turbo": "^2.5.4",
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5"
+  },
+  "packageManager": "pnpm@9.6.0",
+  "pnpm": {
+    "patchedDependencies": {
+      "lightningcss@1.30.1": "patches/lightningcss@1.30.1.patch",
+      "@parcel/watcher@2.5.1": "patches/@parcel__watcher@2.5.1.patch"
+    }
+  }
+}
+
+
+--- packages/@tailwindcss-browser/README.md ---
+<p align="center">
+  <a href="https://tailwindcss.com" target="_blank">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/tailwindlabs/tailwindcss/HEAD/.github/logo-dark.svg">
+      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/tailwindlabs/tailwindcss/HEAD/.github/logo-light.svg">
+      <img alt="Tailwind CSS" src="https://raw.githubusercontent.com/tailwindlabs/tailwindcss/HEAD/.github/logo-light.svg" width="350" height="70" style="max-width: 100%;">
+    </picture>
+  </a>
+</p>
+
+<p align="center">
+  A utility-first CSS framework for rapidly building custom user interfaces.
+</p>
+
+<p align="center">
+    <a href="https://github.com/tailwindlabs/tailwindcss/actions"><img src="https://img.shields.io/github/actions/workflow/status/tailwindlabs/tailwindcss/ci.yml?branch=next" alt="Build Status"></a>
+    <a href="https://www.npmjs.com/package/tailwindcss"><img src="https://img.shields.io/npm/dt/tailwindcss.svg" alt="Total Downloads"></a>
+    <a href="https://github.com/tailwindcss/tailwindcss/releases"><img src="https://img.shields.io/npm/v/tailwindcss.svg" alt="Latest Release"></a>
+    <a href="https://github.com/tailwindcss/tailwindcss/blob/master/LICENSE"><img src="https://img.shields.io/npm/l/tailwindcss.svg" alt="License"></a>
+</p>
+
+---
+
+## Documentation
+
+For full documentation, visit [tailwindcss.com](https://tailwindcss.com).
+
+## Community
+
+For help, discussion about best practices, or feature ideas:
+
+[Discuss Tailwind CSS on GitHub](https://github.com/tailwindcss/tailwindcss/discussions)
+
+## Contributing
+
+If you're interested in contributing to Tailwind CSS, please read our [contributing docs](https://github.com/tailwindcss/tailwindcss/blob/next/.github/CONTRIBUTING.md) **before submitting a pull request**.
+
+
+--- packages/@tailwindcss-browser/package.json ---
+{
+  "name": "@tailwindcss/browser",
+  "version": "4.1.11",
+  "description": "A utility-first CSS framework for rapidly building custom user interfaces.",
+  "license": "MIT",
+  "main": "./dist/index.global.js",
+  "browser": "./dist/index.global.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tailwindlabs/tailwindcss.git",
+    "directory": "packages/@tailwindcss-browser"
+  },
+  "bugs": "https://github.com/tailwindlabs/tailwindcss/issues",
+  "homepage": "https://tailwindcss.com",
+  "scripts": {
+    "lint": "tsc --noEmit",
+    "build": "tsup-node",
+    "dev": "pnpm run build -- --watch",
+    "test:ui": "playwright test"
+  },
+  "exports": {
+    ".": "./dist/index.global.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "provenance": true,
+    "access": "public"
+  },
+  "devDependencies": {
+    "h3": "^1.15.3",
+    "listhen": "^1.9.0",
+    "tailwindcss": "workspace:*"
+  }
+}
+
+
+--- packages/@tailwindcss-browser/tsconfig.json ---
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["es2022", "esnext.disposable", "dom", "dom.iterable"],
+  },
+}
+
+
+--- packages/@tailwindcss-cli/README.md ---
+<p align="center">
+  <a href="https://tailwindcss.com" target="_blank">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/tailwindlabs/tailwindcss/HEAD/.github/logo-dark.svg">
+      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/tailwindlabs/tailwindcss/HEAD/.github/logo-light.svg">
+      <img alt="Tailwind CSS" src="https://raw.githubusercontent.com/tailwindlabs/tailwindcss/HEAD/.github/logo-light.svg" width="350" height="70" style="max-width: 100%;">
+    </picture>
+  </a>
+</p>
+
+<p align="center">
+  A utility-first CSS framework for rapidly building custom user interfaces.
+</p>
+
+<p align="center">
+    <a href="https://github.com/tailwindlabs/tailwindcss/actions"><img src="https://img.shields.io/github/actions/workflow/status/tailwindlabs/tailwindcss/ci.yml?branch=next" alt="Build Status"></a>
+    <a href="https://www.npmjs.com/package/tailwindcss"><img src="https://img.shields.io/npm/dt/tailwindcss.svg" alt="Total Downloads"></a>
+    <a href="https://github.com/tailwindcss/tailwindcss/releases"><img src="https://img.shields.io/npm/v/tailwindcss.svg" alt="Latest Release"></a>
+    <a href="https://github.com/tailwindcss/tailwindcss/blob/master/LICENSE"><img src="https://img.shields.io/npm/l/tailwindcss.svg" alt="License"></a>
+</p>
+
+---
+
+## Documentation
+
+For full documentation, visit [tailwindcss.com](https://tailwindcss.com).
+
+## Community
+
+For help, discussion about best practices, or feature ideas:
+
+[Discuss Tailwind CSS on GitHub](https://github.com/tailwindcss/tailwindcss/discussions)
+
+## Contributing
+
+If you're interested in contributing to Tailwind CSS, please read our [contributing docs](https://github.com/tailwindcss/tailwindcss/blob/next/.github/CONTRIBUTING.md) **before submitting a pull request**.
+
+
+--- packages/@tailwindcss-cli/package.json ---
+{
+  "name": "@tailwindcss/cli",
+  "version": "4.1.11",
+  "description": "A utility-first CSS framework for rapidly building custom user interfaces.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tailwindlabs/tailwindcss.git",
+    "directory": "packages/@tailwindcss-cli"
+  },
+  "bugs": "https://github.com/tailwindlabs/tailwindcss/issues",
+  "homepage": "https://tailwindcss.com",
+  "scripts": {
+    "lint": "tsc --noEmit",
+    "build": "tsup-node",
+    "dev": "pnpm run build -- --watch"
+  },
+  "bin": {
+    "tailwindcss": "./dist/index.mjs"
+  },
+  "exports": {
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "provenance": true,
+    "access": "public"
+  },
+  "dependencies": {
+    "@parcel/watcher": "^2.5.1",
+    "@tailwindcss/node": "workspace:*",
+    "@tailwindcss/oxide": "workspace:*",
+    "enhanced-resolve": "^5.18.2",
+    "mri": "^1.2.0",
+    "picocolors": "^1.1.1",
+    "tailwindcss": "workspace:*"
+  }
+}
+
+
+--- packages/@tailwindcss-cli/tsconfig.json ---
+{
+  "extends": "../tsconfig.base.json",
+}
+
+
+--- packages/@tailwindcss-node/README.md ---
+<p align="center">
+  <a href="https://tailwindcss.com" target="_blank">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/tailwindlabs/tailwindcss/HEAD/.github/logo-dark.svg">
+      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/tailwindlabs/tailwindcss/HEAD/.github/logo-light.svg">
+      <img alt="Tailwind CSS" src="https://raw.githubusercontent.com/tailwindlabs/tailwindcss/HEAD/.github/logo-light.svg" width="350" height="70" style="max-width: 100%;">
+    </picture>
+  </a>
+</p>
+
+<p align="center">
+  A utility-first CSS framework for rapidly building custom user interfaces.
+</p>
+
+<p align="center">
+    <a href="https://github.com/tailwindlabs/tailwindcss/actions"><img src="https://img.shields.io/github/actions/workflow/status/tailwindlabs/tailwindcss/ci.yml?branch=next" alt="Build Status"></a>
+    <a href="https://www.npmjs.com/package/tailwindcss"><img src="https://img.shields.io/npm/dt/tailwindcss.svg" alt="Total Downloads"></a>
+    <a href="https://github.com/tailwindcss/tailwindcss/releases"><img src="https://img.shields.io/npm/v/tailwindcss.svg" alt="Latest Release"></a>
+    <a href="https://github.com/tailwindcss/tailwindcss/blob/master/LICENSE"><img src="https://img.shields.io/npm/l/tailwindcss.svg" alt="License"></a>
+</p>
+
+---
+
+## Documentation
+
+For full documentation, visit [tailwindcss.com](https://tailwindcss.com).
+
+## Community
+
+For help, discussion about best practices, or feature ideas:
+
+[Discuss Tailwind CSS on GitHub](https://github.com/tailwindcss/tailwindcss/discussions)
+
+## Contributing
+
+If you're interested in contributing to Tailwind CSS, please read our [contributing docs](https://github.com/tailwindcss/tailwindcss/blob/next/.github/CONTRIBUTING.md) **before submitting a pull request**.
+
+
+--- packages/@tailwindcss-node/package.json ---
+{
+  "name": "@tailwindcss/node",
+  "version": "4.1.11",
+  "description": "A utility-first CSS framework for rapidly building custom user interfaces.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tailwindlabs/tailwindcss.git",
+    "directory": "packages/@tailwindcss-node"
+  },
+  "bugs": "https://github.com/tailwindlabs/tailwindcss/issues",
+  "homepage": "https://tailwindcss.com",
+  "scripts": {
+    "build": "tsup-node",
+    "dev": "pnpm run build -- --watch"
+  },
+  "files": [
+    "dist/"
+  ],
+  "publishConfig": {
+    "provenance": true,
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./require-cache": {
+      "types": "./dist/require-cache.d.ts",
+      "default": "./dist/require-cache.js"
+    },
+    "./esm-cache-loader": {
+      "types": "./dist/esm-cache.loader.d.mts",
+      "default": "./dist/esm-cache.loader.mjs"
+    }
+  },
+  "dependencies": {
+    "@ampproject/remapping": "^2.3.0",
+    "enhanced-resolve": "^5.18.2",
+    "jiti": "^2.5.1",
+    "lightningcss": "catalog:",
+    "magic-string": "^0.30.17",
+    "source-map-js": "^1.2.1",
+    "tailwindcss": "workspace:*"
+  }
+}
+
+
+--- packages/@tailwindcss-node/tsconfig.json ---
+{
+  "extends": "../tsconfig.base.json",
+}
+
+
+--- packages/@tailwindcss-postcss/README.md ---
+<p align="center">
+  <a href="https://tailwindcss.com" target="_blank">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/tailwindlabs/tailwindcss/HEAD/.github/logo-dark.svg">
+      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/tailwindlabs/tailwindcss/HEAD/.github/logo-light.svg">
+      <img alt="Tailwind CSS" src="https://raw.githubusercontent.com/tailwindlabs/tailwindcss/HEAD/.github/logo-light.svg" width="350" height="70" style="max-width: 100%;">
+    </picture>
+  </a>
+</p>
+
+<p align="center">
+  A utility-first CSS framework for rapidly building custom user interfaces.
+</p>
+
+<p align="center">
+    <a href="https://github.com/tailwindlabs/tailwindcss/actions"><img src="https://img.shields.io/github/actions/workflow/status/tailwindlabs/tailwindcss/ci.yml?branch=next" alt="Build Status"></a>
+    <a href="https://www.npmjs.com/package/tailwindcss"><img src="https://img.shields.io/npm/dt/tailwindcss.svg" alt="Total Downloads"></a>
+    <a href="https://github.com/tailwindcss/tailwindcss/releases"><img src="https://img.shields.io/npm/v/tailwindcss.svg" alt="Latest Release"></a>
+    <a href="https://github.com/tailwindcss/tailwindcss/blob/master/LICENSE"><img src="https://img.shields.io/npm/l/tailwindcss.svg" alt="License"></a>
+</p>
+
+---
+
+## Documentation
+
+For full documentation, visit [tailwindcss.com](https://tailwindcss.com).
+
+## Community
+
+For help, discussion about best practices, or feature ideas:
+
+[Discuss Tailwind CSS on GitHub](https://github.com/tailwindcss/tailwindcss/discussions)
+
+## Contributing
+
+If you're interested in contributing to Tailwind CSS, please read our [contributing docs](https://github.com/tailwindcss/tailwindcss/blob/next/.github/CONTRIBUTING.md) **before submitting a pull request**.
+
+
+--- packages/@tailwindcss-postcss/package.json ---
+{
+  "name": "@tailwindcss/postcss",
+  "version": "4.1.11",
+  "description": "PostCSS plugin for Tailwind CSS, a utility-first CSS framework for rapidly building custom user interfaces",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tailwindlabs/tailwindcss.git",
+    "directory": "packages/@tailwindcss-postcss"
+  },
+  "bugs": "https://github.com/tailwindlabs/tailwindcss/issues",
+  "homepage": "https://tailwindcss.com",
+  "scripts": {
+    "lint": "tsc --noEmit",
+    "build": "tsup-node",
+    "dev": "pnpm run build -- --watch"
+  },
+  "files": [
+    "dist/"
+  ],
+  "publishConfig": {
+    "provenance": true,
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@alloc/quick-lru": "^5.2.0",
+    "@tailwindcss/node": "workspace:*",
+    "@tailwindcss/oxide": "workspace:*",
+    "postcss": "^8.4.41",
+    "tailwindcss": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@types/postcss-import": "14.0.3",
+    "dedent": "1.6.0",
+    "internal-example-plugin": "workspace:*",
+    "postcss-import": "^16.1.1"
+  }
+}
+
+
+--- packages/@tailwindcss-postcss/tsconfig.json ---
+{
+  "extends": "../tsconfig.base.json",
+}
+
+
+--- packages/@tailwindcss-standalone/package.json ---
+{
+  "name": "@tailwindcss/standalone",
+  "version": "4.1.11",
+  "private": true,
+  "description": "Standalone CLI for Tailwind CSS",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tailwindlabs/tailwindcss.git",
+    "directory": "packages/@tailwindcss-standalone"
+  },
+  "bugs": "https://github.com/tailwindlabs/tailwindcss/issues",
+  "homepage": "https://tailwindcss.com",
+  "scripts": {
+    "lint": "tsc --noEmit",
+    "build": "bun ./scripts/build.ts"
+  },
+  "bin": {
+    "tailwindcss": "./dist/index.mjs"
+  },
+  "exports": {
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@tailwindcss/aspect-ratio": "^0.4.2",
+    "@tailwindcss/cli": "workspace:*",
+    "@tailwindcss/forms": "^0.5.10",
+    "@tailwindcss/typography": "^0.5.16",
+    "detect-libc": "1.0.3",
+    "enhanced-resolve": "^5.18.2",
+    "tailwindcss": "workspace:*"
+  },
+  "__notes": "These binary packages must be included so Bun can build the CLI for all supported platforms. We also rely on Lightning CSS and Parcel being patched so Bun can statically analyze the executables.",
+  "devDependencies": {
+    "@parcel/watcher-darwin-arm64": "^2.5.1",
+    "@parcel/watcher-darwin-x64": "^2.5.1",
+    "@parcel/watcher-linux-arm64-glibc": "^2.5.1",
+    "@parcel/watcher-linux-arm64-musl": "^2.5.1",
+    "@parcel/watcher-linux-x64-glibc": "^2.5.1",
+    "@parcel/watcher-linux-x64-musl": "^2.5.1",
+    "@parcel/watcher-win32-x64": "^2.5.1",
+    "@types/bun": "^1.2.18",
+    "bun": "^1.2.18",
+    "lightningcss-darwin-arm64": "catalog:",
+    "lightningcss-darwin-x64": "catalog:",
+    "lightningcss-linux-arm64-gnu": "catalog:",
+    "lightningcss-linux-arm64-musl": "catalog:",
+    "lightningcss-linux-x64-gnu": "catalog:",
+    "lightningcss-linux-x64-musl": "catalog:",
+    "lightningcss-win32-x64-msvc": "catalog:"
+  }
+}
+
+
+--- packages/@tailwindcss-standalone/tsconfig.json ---
+{
+  "extends": "../tsconfig.base.json",
+}
+
+
+--- packages/@tailwindcss-upgrade/README.md ---
+<p align="center">
+  <a href="https://tailwindcss.com" target="_blank">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/tailwindlabs/tailwindcss/HEAD/.github/logo-dark.svg">
+      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/tailwindlabs/tailwindcss/HEAD/.github/logo-light.svg">
+      <img alt="Tailwind CSS" src="https://raw.githubusercontent.com/tailwindlabs/tailwindcss/HEAD/.github/logo-light.svg" width="350" height="70" style="max-width: 100%;">
+    </picture>
+  </a>
+</p>
+
+<p align="center">
+  A utility-first CSS framework for rapidly building custom user interfaces.
+</p>
+
+<p align="center">
+    <a href="https://github.com/tailwindlabs/tailwindcss/actions"><img src="https://img.shields.io/github/actions/workflow/status/tailwindlabs/tailwindcss/ci.yml?branch=next" alt="Build Status"></a>
+    <a href="https://www.npmjs.com/package/tailwindcss"><img src="https://img.shields.io/npm/dt/tailwindcss.svg" alt="Total Downloads"></a>
+    <a href="https://github.com/tailwindcss/tailwindcss/releases"><img src="https://img.shields.io/npm/v/tailwindcss.svg" alt="Latest Release"></a>
+    <a href="https://github.com/tailwindcss/tailwindcss/blob/master/LICENSE"><img src="https://img.shields.io/npm/l/tailwindcss.svg" alt="License"></a>
+</p>
+
+---
+
+## Documentation
+
+For full documentation, visit [tailwindcss.com](https://tailwindcss.com).
+
+## Community
+
+For help, discussion about best practices, or feature ideas:
+
+[Discuss Tailwind CSS on GitHub](https://github.com/tailwindcss/tailwindcss/discussions)
+
+## Contributing
+
+If you're interested in contributing to Tailwind CSS, please read our [contributing docs](https://github.com/tailwindcss/tailwindcss/blob/next/.github/CONTRIBUTING.md) **before submitting a pull request**.
+
+
+--- packages/@tailwindcss-upgrade/package.json ---
+{
+  "name": "@tailwindcss/upgrade",
+  "version": "4.1.11",
+  "description": "A utility-first CSS framework for rapidly building custom user interfaces.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tailwindlabs/tailwindcss.git",
+    "directory": "packages/@tailwindcss-cli"
+  },
+  "bugs": "https://github.com/tailwindlabs/tailwindcss/issues",
+  "homepage": "https://tailwindcss.com",
+  "scripts": {
+    "lint": "tsc --noEmit",
+    "build": "tsup-node",
+    "dev": "pnpm run build -- --watch"
+  },
+  "bin": "./dist/index.mjs",
+  "exports": {
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "provenance": true,
+    "access": "public"
+  },
+  "dependencies": {
+    "@tailwindcss/node": "workspace:*",
+    "@tailwindcss/oxide": "workspace:*",
+    "braces": "^3.0.3",
+    "dedent": "1.6.0",
+    "enhanced-resolve": "^5.18.2",
+    "globby": "^14.1.0",
+    "jiti": "^2.0.0-beta.3",
+    "mri": "^1.2.0",
+    "picocolors": "^1.1.1",
+    "postcss": "^8.4.41",
+    "postcss-import": "^16.1.1",
+    "postcss-selector-parser": "^7.1.0",
+    "prettier": "catalog:",
+    "semver": "^7.7.2",
+    "tailwindcss": "workspace:*",
+    "tree-sitter": "^0.22.4",
+    "tree-sitter-typescript": "^0.23.2"
+  },
+  "devDependencies": {
+    "@types/braces": "^3.0.5",
+    "@types/node": "catalog:",
+    "@types/postcss-import": "^14.0.3",
+    "@types/semver": "^7.7.0"
+  }
+}
+
+
+--- packages/@tailwindcss-upgrade/tsconfig.json ---
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+  },
+}
+
+
+--- packages/@tailwindcss-vite/README.md ---
+<p align="center">
+  <a href="https://tailwindcss.com" target="_blank">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/tailwindlabs/tailwindcss/HEAD/.github/logo-dark.svg">
+      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/tailwindlabs/tailwindcss/HEAD/.github/logo-light.svg">
+      <img alt="Tailwind CSS" src="https://raw.githubusercontent.com/tailwindlabs/tailwindcss/HEAD/.github/logo-light.svg" width="350" height="70" style="max-width: 100%;">
+    </picture>
+  </a>
+</p>
+
+<p align="center">
+  A utility-first CSS framework for rapidly building custom user interfaces.
+</p>
+
+<p align="center">
+    <a href="https://github.com/tailwindlabs/tailwindcss/actions"><img src="https://img.shields.io/github/actions/workflow/status/tailwindlabs/tailwindcss/ci.yml?branch=next" alt="Build Status"></a>
+    <a href="https://www.npmjs.com/package/tailwindcss"><img src="https://img.shields.io/npm/dt/tailwindcss.svg" alt="Total Downloads"></a>
+    <a href="https://github.com/tailwindcss/tailwindcss/releases"><img src="https://img.shields.io/npm/v/tailwindcss.svg" alt="Latest Release"></a>
+    <a href="https://github.com/tailwindcss/tailwindcss/blob/master/LICENSE"><img src="https://img.shields.io/npm/l/tailwindcss.svg" alt="License"></a>
+</p>
+
+---
+
+## Documentation
+
+For full documentation, visit [tailwindcss.com](https://tailwindcss.com).
+
+## Community
+
+For help, discussion about best practices, or feature ideas:
+
+[Discuss Tailwind CSS on GitHub](https://github.com/tailwindcss/tailwindcss/discussions)
+
+## Contributing
+
+If you're interested in contributing to Tailwind CSS, please read our [contributing docs](https://github.com/tailwindcss/tailwindcss/blob/next/.github/CONTRIBUTING.md) **before submitting a pull request**.
+
+
+--- packages/@tailwindcss-vite/package.json ---
+{
+  "name": "@tailwindcss/vite",
+  "version": "4.1.11",
+  "description": "A utility-first CSS framework for rapidly building custom user interfaces.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tailwindlabs/tailwindcss.git",
+    "directory": "packages/@tailwindcss-vite"
+  },
+  "bugs": "https://github.com/tailwindlabs/tailwindcss/issues",
+  "homepage": "https://tailwindcss.com",
+  "scripts": {
+    "build": "tsup-node",
+    "dev": "pnpm run build -- --watch"
+  },
+  "files": [
+    "dist/"
+  ],
+  "publishConfig": {
+    "provenance": true,
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "dependencies": {
+    "@tailwindcss/node": "workspace:*",
+    "@tailwindcss/oxide": "workspace:*",
+    "tailwindcss": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "vite": "catalog:"
+  },
+  "peerDependencies": {
+    "vite": "^5.2.0 || ^6 || ^7"
+  }
+}
+
+
+--- packages/@tailwindcss-vite/tsconfig.json ---
+{
+  "extends": "../tsconfig.base.json",
+}
+
+
+--- packages/internal-example-plugin/package.json ---
+{
+  "name": "internal-example-plugin",
+  "version": "0.0.0",
+  "private": true,
+  "main": "index.js"
+}
+
+
+--- packages/tailwindcss/README.md ---
+<p align="center">
+  <a href="https://tailwindcss.com" target="_blank">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/tailwindlabs/tailwindcss/HEAD/.github/logo-dark.svg">
+      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/tailwindlabs/tailwindcss/HEAD/.github/logo-light.svg">
+      <img alt="Tailwind CSS" src="https://raw.githubusercontent.com/tailwindlabs/tailwindcss/HEAD/.github/logo-light.svg" width="350" height="70" style="max-width: 100%;">
+    </picture>
+  </a>
+</p>
+
+<p align="center">
+  A utility-first CSS framework for rapidly building custom user interfaces.
+</p>
+
+<p align="center">
+    <a href="https://github.com/tailwindlabs/tailwindcss/actions"><img src="https://img.shields.io/github/actions/workflow/status/tailwindlabs/tailwindcss/ci.yml?branch=next" alt="Build Status"></a>
+    <a href="https://www.npmjs.com/package/tailwindcss"><img src="https://img.shields.io/npm/dt/tailwindcss.svg" alt="Total Downloads"></a>
+    <a href="https://github.com/tailwindcss/tailwindcss/releases"><img src="https://img.shields.io/npm/v/tailwindcss.svg" alt="Latest Release"></a>
+    <a href="https://github.com/tailwindcss/tailwindcss/blob/master/LICENSE"><img src="https://img.shields.io/npm/l/tailwindcss.svg" alt="License"></a>
+</p>
+
+---
+
+## Documentation
+
+For full documentation, visit [tailwindcss.com](https://tailwindcss.com).
+
+## Community
+
+For help, discussion about best practices, or feature ideas:
+
+[Discuss Tailwind CSS on GitHub](https://github.com/tailwindcss/tailwindcss/discussions)
+
+## Contributing
+
+If you're interested in contributing to Tailwind CSS, please read our [contributing docs](https://github.com/tailwindcss/tailwindcss/blob/next/.github/CONTRIBUTING.md) **before submitting a pull request**.
+
+
+--- packages/tailwindcss/tsconfig.json ---
+{
+  "extends": "../tsconfig.base.json",
+}
+
+
+--- playgrounds/nextjs/README.md ---
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+
+## Getting Started
+
+First, run the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+
+This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+
+--- playgrounds/nextjs/package.json ---
+{
+  "name": "nextjs-playground",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@tailwindcss/postcss": "workspace:^",
+    "fast-glob": "^3.3.3",
+    "next": "15.4.4",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "tailwindcss": "workspace:^"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "eslint": "^9.32.0",
+    "eslint-config-next": "^15.4.4",
+    "typescript": "^5.5.4"
+  }
+}
+
+
+--- playgrounds/nextjs/tsconfig.json ---
+{
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next",
+      },
+    ],
+    "paths": {
+      "@/*": ["./*"],
+    },
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"],
+}
+
+
+KEY SOURCE FILES (SUMMARIZED)
+========================================
+
+--- packages/tailwindcss/src/index.ts ---
+// Key imports/dependencies:
+import { version } from '../package.json'
+import { substituteAtApply } from './apply'
+import {
+import { substituteAtImports } from './at-import'
+import { applyCompatibilityHooks } from './compat/apply-compat-hooks'
+import type { UserConfig } from './compat/config/types'
+import { type Plugin } from './compat/plugin-api'
+import { applyVariant, compileCandidates } from './compile'
+import { substituteFunctions } from './css-functions'
+import * as CSS from './css-parser'
+
+// Key definitions:
+export type Config = UserConfig
+const IS_VALID_PREFIX = /^[a-z]+$/
+export const enum Polyfills {
+function throwOnLoadModule(): never {
+function throwOnLoadStylesheet(): never {
+function parseThemeOptions(params: string) {
+export const enum Features {
+export async function compileAst(
+function onInvalidCandidate(candidate: string) {
+export type { DecodedSourceMap }
+export async function compile(
+export async function __unstable__loadDesignSystem(css: string, opts: CompileOptions = {}) {
+export default function postcssPluginWarning() {
+
+--- packages/@tailwindcss-postcss/src/index.ts ---
+// Key imports/dependencies:
+import QuickLRU from '@alloc/quick-lru'
+import {
+import { clearRequireCache } from '@tailwindcss/node/require-cache'
+import { Scanner } from '@tailwindcss/oxide'
+import fs from 'node:fs'
+import path, { relative } from 'node:path'
+import postcss, { type AcceptedPlugin, type PluginCreator } from 'postcss'
+import { toCss, type AstNode } from '../../tailwindcss/src/ast'
+import { cssAstToPostCssAst, postCssAstToCssAst } from './ast'
+import fixRelativePathsPlugin from './postcss-fix-relative-paths'
+
+// Key definitions:
+const DEBUG = env.DEBUG
+const cache = new QuickLRU<string, CacheEntry>({ maxSize: 50 })
+function getContextFromCache(inputFile: string, opts: PluginOptions): CacheEntry {
+export type PluginOptions = {
+function tailwindcss(opts: PluginOptions = {}): AcceptedPlugin {
+export default Object.assign(tailwindcss, { postcss: true }) as PluginCreator<PluginOptions>
+
+--- packages/@tailwindcss-upgrade/src/index.ts ---
+// Key imports/dependencies:
+import { Scanner } from '@tailwindcss/oxide'
+import { globby } from 'globby'
+import fs from 'node:fs/promises'
+import path from 'node:path'
+import postcss from 'postcss'
+import { migrateJsConfig } from './codemods/config/migrate-js-config'
+import { migratePostCSSConfig } from './codemods/config/migrate-postcss'
+import { analyze as analyzeStylesheets } from './codemods/css/analyze'
+import { formatNodes } from './codemods/css/format-nodes'
+import { linkConfigs as linkConfigsToStylesheets } from './codemods/css/link'
+
+// Key definitions:
+const options = {
+const flags = args(options)
+
+--- packages/@tailwindcss-vite/src/index.ts ---
+// Key imports/dependencies:
+import {
+import { clearRequireCache } from '@tailwindcss/node/require-cache'
+import { Scanner } from '@tailwindcss/oxide'
+import fs from 'node:fs/promises'
+import path from 'node:path'
+import type { Plugin, ResolvedConfig, ViteDevServer } from 'vite'
+
+// Key definitions:
+const DEBUG = env.DEBUG
+const SPECIAL_QUERY_RE = /[?&](?:worker|sharedworker|raw|url)\b/
+const COMMON_JS_PROXY_RE = /\?commonjs-proxy/
+const INLINE_STYLE_ID_RE = /[?&]index\=\d+\.css$/
+export default function tailwindcss(): Plugin[] {
+function customCssResolver(id: string, base: string) {
+function customJsResolver(id: string, base: string) {
+function getExtension(id: string) {
+function isPotentialCssRootFile(id: string) {
+function idToPath(id: string) {
+class DefaultMap<K, V> extends Map<K, V> {
+class Root {
+function addWatchFile(file: string) {
+
+--- packages/@tailwindcss-browser/src/index.ts ---
+// Key imports/dependencies:
+import * as tailwindcss from 'tailwindcss'
+import * as assets from './assets'
+import { Instrumentation } from './instrumentation'
+
+// Key definitions:
+const STYLE_TYPE = 'text/tailwindcss'
+function load() {
+function rebuild(kind: 'full' | 'incremental') {
+function observeSheet(sheet: HTMLStyleElement) {
+
+--- packages/@tailwindcss-upgrade/src/index.test.ts ---
+// Key imports/dependencies:
+import { __unstable__loadDesignSystem } from '@tailwindcss/node'
+import dedent from 'dedent'
+import path from 'node:path'
+import postcss from 'postcss'
+import { expect, it, vi } from 'vitest'
+import { formatNodes } from './codemods/css/format-nodes'
+import { migrateContents } from './codemods/css/migrate'
+import { sortBuckets } from './codemods/css/sort-buckets'
+import * as versions from './utils/version'
+
+// Key definitions:
+const css = dedent
+function migrate(input: string, config: any) {
+
+--- packages/@tailwindcss-cli/src/commands/help/index.ts ---
+// Key imports/dependencies:
+import pc from 'picocolors'
+import type { Arg } from '../../utils/args'
+import { UI, header, highlight, indent, println, wordWrap } from '../../utils/renderer'
+
+// Key definitions:
+export function help({
+
+--- packages/@tailwindcss-upgrade/src/commands/help/index.ts ---
+// Key imports/dependencies:
+import pc from 'picocolors'
+import type { Arg } from '../../utils/args'
+import { UI, header, highlight, indent, println, wordWrap } from '../../utils/renderer'
+
+// Key definitions:
+export function help({
+
+--- packages/@tailwindcss-standalone/src/index.ts ---
+// Key imports/dependencies:
+import fs from 'node:fs'
+import { createRequire } from 'node:module'
+import packageJson from 'tailwindcss/package.json'
+import indexCss from 'tailwindcss/index.css' with { type: 'file' }
+import preflightCss from 'tailwindcss/preflight.css' with { type: 'file' }
+import themeCss from 'tailwindcss/theme.css' with { type: 'file' }
+import utilitiesCss from 'tailwindcss/utilities.css' with { type: 'file' }
+
+// Key definitions:
+const localResolve = createRequire(import.meta.url).resolve
+const likelyEmbeddedFile =
+
+--- integrations/webpack/index.test.ts ---
+// Key imports/dependencies:
+import { css, html, js, json, test } from '../utils'
+
+// Key definitions:
+module.exports = {
+module.exports = {
+
+--- crates/oxide/src/main.rs ---
+// File: main.rs
+// No key patterns detected
+
+--- packages/@tailwindcss-postcss/src/postcss-fix-relative-paths/index.test.ts ---
+// Key imports/dependencies:
+import fs from 'node:fs'
+import path from 'node:path'
+import postcss from 'postcss'
+import atImport from 'postcss-import'
+import { describe, expect, test } from 'vitest'
+import fixRelativePathsPlugin from '.'
+
+
+--- packages/@tailwindcss-postcss/src/postcss-fix-relative-paths/index.ts ---
+// Key imports/dependencies:
+import { normalizePath } from '@tailwindcss/node'
+import path from 'node:path'
+import type { AtRule, Plugin } from 'postcss'
+
+// Key definitions:
+const SINGLE_QUOTE = "'"
+const DOUBLE_QUOTE = '"'
+export default function fixRelativePathsPlugin(): Plugin {
+function fixRelativePath(atRule: AtRule) {
+
+--- packages/@tailwindcss-cli/src/index.ts ---
+// Key imports/dependencies:
+import { args, type Arg } from './utils/args'
+import * as build from './commands/build'
+import { help } from './commands/help'
+
+// Key definitions:
+const sharedOptions = {
+const flags = args({
+const command = flags._[0]
+
+--- packages/@tailwindcss-node/src/index.ts ---
+// Key imports/dependencies:
+import * as Module from 'node:module'
+import { pathToFileURL } from 'node:url'
+import * as env from './env'
+
+// Key definitions:
+export * from './compile'
+export * from './instrumentation'
+export * from './normalize-path'
+export * from './optimize'
+export * from './source-maps'
+export { env }
+
+--- packages/tailwindcss/src/index.bench.ts ---
+// Key imports/dependencies:
+import { Scanner } from '@tailwindcss/oxide'
+import { bench } from 'vitest'
+import { compile } from '.'
+
+// Key definitions:
+const root = process.env.FOLDER || process.cwd()
+const css = String.raw
+
+--- playgrounds/vite/src/index.html ---
+// File: index.html
+// No key patterns detected
+
+--- playgrounds/vite/src/main.tsx ---
+// Key imports/dependencies:
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { App } from './app'
+import './index.css'
+
+
+--- packages/tailwindcss/index.css ---
+// File: index.css
+// No key patterns detected
+
+--- packages/internal-example-plugin/index.js ---
+// Key definitions:
+module.exports = function ({ addVariant }) {
+
+FILE INVENTORY
+------------------------------
+.github/CODEOWNERS (28B)
+.github/CONTRIBUTING.md (3KB)
+.github/FUNDING.yml (44B)
+.github/ISSUE_TEMPLATE/bug-report.md (2KB)
+.github/ISSUE_TEMPLATE/config.yml (607B)
+.github/PULL_REQUEST_TEMPLATE.md (882B)
+.github/logo-dark.svg (3KB)
+.github/logo-light.svg (3KB)
+.github/workflows/ci.yml (3KB)
+.github/workflows/integration-tests.yml (3KB)
+.github/workflows/prepare-release.yml (11KB)
+.github/workflows/release-insiders.yml (11KB)
+.github/workflows/release.yml (11KB)
+.gitignore (118B)
+.npmrc (26B)
+.prettierignore (110B)
+CHANGELOG.md (253KB)
+Cargo.lock (21KB)
+Cargo.toml (80B)
+LICENSE (1KB)
+README.md (2KB)
+crates/classification-macros/Cargo.toml (157B)
+crates/classification-macros/src/lib.rs (8KB)
+crates/ignore/COPYING (126B)
+crates/ignore/Cargo.toml (1KB)
+crates/ignore/LICENSE-MIT (1KB)
+crates/ignore/README.md (2KB)
+crates/ignore/UNLICENSE (1KB)
+crates/ignore/examples/walk.rs (2KB)
+crates/ignore/src/default_types.rs (12KB)
+crates/ignore/src/dir.rs (42KB)
+crates/ignore/src/gitignore.rs (30KB)
+crates/ignore/src/lib.rs (18KB)
+crates/ignore/src/overrides.rs (9KB)
+crates/ignore/src/pathutil.rs (4KB)
+crates/ignore/src/types.rs (19KB)
+crates/ignore/src/walk.rs (76KB)
+crates/ignore/tests/gitignore_matched_path_or_any_parents_tests.gitignore (2KB)
+crates/ignore/tests/gitignore_matched_path_or_any_parents_tests.rs (12KB)
+crates/node/.cargo/config.toml (574B)
+crates/node/.gitignore (3KB)
+crates/node/.npmignore (122B)
+crates/node/Cargo.toml (415B)
+crates/node/build.rs (63B)
+crates/node/npm/android-arm-eabi/README.md (114B)
+crates/node/npm/android-arm-eabi/package.json (540B)
+crates/node/npm/android-arm64/README.md (108B)
+crates/node/npm/android-arm64/package.json (530B)
+crates/node/npm/darwin-arm64/README.md (106B)
+crates/node/npm/darwin-arm64/package.json (525B)
+
+============================================================
+END OF CONTEXT
+============================================================
